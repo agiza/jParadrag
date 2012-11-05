@@ -6,17 +6,20 @@ Draggable Parallax Panorama jQuery Pluggin
 # Usage
 ## HTML
 You can have as many layers as you like. The last one will be the one that they drag.
+
 	<ul id="jParadrag">
 		<li><img src="http://background-image.jpg" /></li>
 		<li><img src="http://front-draggable-image.jpg" /></li>
 	</ul>
 ## JS
 You need jQuery and jQueryUI Draggable
+
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jparalax-drag.js" ></script>
 
 Initialize
+
 	<script type='text/javascript' charset='utf-8'>
 		$(document).ready(function() {
 			$('#jParadrag').jParadrag({
