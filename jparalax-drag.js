@@ -6,6 +6,7 @@
 		startingZIndex 	: 1,
 		startPosition 	: null,
 		factor 			: 2,
+		loop			: true,
 		onDrag 			: function(){  },
 		onDragStop 		: function(){  },
 		onLoad			: function(){  }
@@ -13,6 +14,8 @@
 	
 	// returns the x of the middle image
 	function _middle_x(left_x, width){
+		if(!opts.loop) return left_x;
+		
 		if(left_x > -width){
 			return left_x - width;
 		} else if(left_x < -(2*width)){
@@ -69,6 +72,8 @@
 			$self.css({
 				position : 'relative',
 				display  : 'block',
+				margin   : 0,
+				padding  : 0,
 				width    : opts.width,
 				height   : opts.height,
 				overflow : 'hidden',
@@ -82,45 +87,65 @@
 				})
 				.each(function(i){
 					var my_img = $('img', this),
-						img_width = $(this).data('jParadrag.width');
+						img_width = $(this).data('jParadrag.width'),
+						starting_position,
+						draggable_opts = {
+							axis : 'x',
+							drag : function(ev, ui){ 
+								if(!$self.data('jParadrag.draggin')){
+									$self.data('jParadrag.draggin', true);
+									opts.onDrag();
+								} 
+								methods.drag(ev, ui);
+							},
+							stop : function(ev, ui){
+								if($self.data('jParadrag.draggin')){
+									$self.data('jParadrag.draggin', false);
+									opts.onDragStop();
+								} 
+								
+								methods.stop_drag(ev, ui);
+							}
+						};
 					
-					$(this).css({
-						'z-index': opts.startingZIndex + i,
-						'width' : img_width * 3
-					});
+					if(opts.loop){
+						$(this).css({
+							'z-index': opts.startingZIndex + i,
+							'width' : img_width * 3
+						});
+
+						$(this)
+							.append(my_img.clone())
+							.prepend(my_img.clone())
+							.find('img')
+								.css({
+									display : 'block',
+									float : 'left'
+								});
+						starting_position = opts.startPosition ? -(opts.startPosition + img_width) : -(img_width * 1.5);
+						
+					// not looping
+					} else {
+						$(this).css({
+							'z-index': opts.startingZIndex + i,
+							'width' : img_width
+						});
+
+						$(this)
+							.find('img')
+								.css({
+									display : 'block',
+									float : 'left'
+								});
+						starting_position = opts.startPosition ? -(opts.startPosition) : -(img_width * 0.5);
+						draggable_opts.containment = [-(opts.width),0,0,opts.height];
+					}
 					
-					$(this)
-						.append(my_img.clone())
-						.prepend(my_img.clone())
-						.find('img')
-							.css({
-								display : 'block',
-								float : 'left'
-							});
 
 					// the front li
 					if(i == li_count - 1){
-						$(this)
-							.draggable({
-								axis : 'x',
-								drag : function(ev, ui){ 
-									if(!$self.data('jParadrag.draggin')){
-										$self.data('jParadrag.draggin', true);
-										opts.onDrag();
-									} 
-									methods.drag(ev, ui);
-								},
-								stop : function(ev, ui){
-									if($self.data('jParadrag.draggin')){
-										$self.data('jParadrag.draggin', false);
-										opts.onDragStop();
-									} 
-									
-									methods.stop_drag(ev, ui);
-								}
-							});
-							
-						var	starting_position = opts.startPosition ? -(opts.startPosition + img_width) : -(img_width * 1.5);
+						$(this).draggable(draggable_opts);
+						
 						methods.move_to(starting_position);
 					} 
 				});

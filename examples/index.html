@@ -10,7 +10,7 @@
 				<li><img src="images/back.jpg"></li>
 				<li><img src="images/front.png"></li>
 			</ul>
-			<div style="position:absolute;bottom:30px;left:300px;z-index:6;display:none;background:url('images/drag.png');width:93px;height:94px;" id="drag" /></div>
+			<div style="position:absolute;bottom:30px;left:500px;z-index:6;display:none;background:url('images/drag.png');width:93px;height:94px;" id="drag" /></div>
 		</div>
 		<script type='text/javascript' charset='utf-8'>
 			$(document).ready(function() {
@@ -18,7 +18,8 @@
 					.jParadrag({
 						width: 1100,
 						height : 619,
-						startPosition : 750,
+						startPosition : 530,
+						loop : false,
 						onLoad : function(){
 							$('#drag').fadeIn();
 						},

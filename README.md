@@ -1,7 +1,7 @@
 jParadrag
 =========
 
-A jQuery Pluggin that creates a Draggable Parallax Panorama that Endlessly Loops 
+A jQuery Pluggin that creates a Draggable Parallax Panorama.  By default it will endlessly loop, i.e. the user can drag the foreground image to the left and right forever.  However, you can turn this feature off and contain the foreground image within the viewing window. 
 
 # Usage
 ## HTML
@@ -26,6 +26,7 @@ Initialize
 				width 			: 600, 	// the width of your panorama window *All your images must be >= this width*
 				height			: 400, 	// the height of your panorama window
 				startingZIndex 	: 1,	
+				loop			: true, // endlessly loop
 				startPosition 	: null, // by default the panorama will start in the center of the front image, otherwise use pixels from the left
 				factor 			: 2,	// the parallax factor, each layer back will move at half the speed of the one in front
 				onDrag 			: function(){  }, // called when the drag starts
