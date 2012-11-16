@@ -38,11 +38,11 @@
 		onDragStop 		: function(){  },
 		onLoad			: function(){  }
     }, o);
-	
+
 	// returns the x of the middle image
 	function _middle_x(left_x, width){
 		if(!opts.loop) return left_x;
-		
+
 		if(left_x > -width){
 			return left_x - width;
 		} else if(left_x < -(2*width)){
@@ -50,14 +50,14 @@
 		}
 		return left_x;
 	}
-	
+
 	return this.each(function(){
 		var $self         = $(this),
 			self          = this,
 			li_count      = $('li', this).length,
 			img_count     = $(this).find('img').length,
 			images_loaded = 0;
-			
+
 		var methods = {
 			drag : function(ev, ui){
 				var left_x = typeof ev === 'object' ? ui.position.left : ev;
@@ -75,37 +75,38 @@
 			move_layers : function(front_x){
 				$('li', $self).each(function(i){
 					if(i == li_count - 1) return;
-					
+
 					var last_spot = $(this).data('jParadrag.last_spot'),
 					 	f = (1+i) * opts.factor, 
 						my_left;
-						
+
 					if(last_spot){
 						var diff = parseInt(last_spot) - _middle_x(front_x, $(this).data('jParadrag.width'));
 						var sign = diff > 0 ? '-=' : '+=';
 						if(Math.abs(diff) < opts.width)
 							$(this).css({ left : sign + parseInt(Math.abs(diff) / f) + 'px' });
-						
+
 					} else {
 						$(this).css({ left : _middle_x(front_x / f, $(this).data('jParadrag.width')) });
 					}
 					$(this).data('jParadrag.last_spot', _middle_x(front_x, $(this).data('jParadrag.width')));
-					
+
 				})
 			}
 		}
-		
+
 		function init(){
 			$self.css({
 				position : 'relative',
-				display  : 'block',
 				margin   : 0,
 				padding  : 0,
 				width    : opts.width,
 				height   : opts.height,
 				overflow : 'hidden',
 				'list-style' : 'none'
-			});
+			}).fadeIn();
+			$('#_jparadrag_placeholder').remove();
+
 			$('li', self)
 				.css({
 					position : 'absolute',
@@ -130,11 +131,11 @@
 									$self.data('jParadrag.draggin', false);
 									opts.onDragStop();
 								} 
-								
+
 								methods.stop_drag(ev, ui);
 							}
 						};
-					
+
 					if(opts.loop){
 						$(this).css({
 							'z-index': opts.startingZIndex + i,
@@ -150,7 +151,7 @@
 									float : 'left'
 								});
 						starting_position = opts.startPosition ? -(opts.startPosition + img_width) : -(img_width * 1.5);
-						
+
 					// not looping
 					} else {
 						$(this).css({
@@ -167,19 +168,19 @@
 						starting_position = opts.startPosition ? -(opts.startPosition) : -(img_width * 0.5);
 						draggable_opts.containment = [-(opts.width-$(this).offset().left),0,0,opts.height];
 					}
-					
+
 
 					// the front li
 					if(i == li_count - 1){
 						$(this).draggable(draggable_opts);
-						
+
 						methods.move_to(starting_position);
 					} 
 				});
 				opts.onLoad();
 		}
-		
-		
+
+		$self.hide().after($("<div id='_jparadrag_placeholder'>").css({ width : opts.width, height :  opts.height }));
 		$self.find('img').each(function(){
 			var i    = new Image();
 			i.src    = $(this).attr('src');
@@ -190,8 +191,8 @@
 				if(images_loaded == img_count) init();
 			}
 		})
-			
-		
+
+
 	});
 
   };
