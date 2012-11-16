@@ -166,7 +166,7 @@
 									float : 'left'
 								});
 						starting_position = opts.startPosition ? -(opts.startPosition) : -(img_width * 0.5);
-						draggable_opts.containment = [-(opts.width-$(this).offset().left),0,0,opts.height];
+						draggable_opts.containment = [-(opts.width-$(this).offset().left),0,$(this).offset().left-2,opts.height];
 					}
 
 
