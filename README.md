@@ -39,6 +39,7 @@ Initialize
 	</script>
 	
 ### Notes
+* If you want it to work on touchscreens, [this library](https://github.com/furf/jquery-ui-touch-punch) will work.
 * Since these transparent panoramic images can get pretty large,
 jParadrag will create a placeholder div that is the same size as the viewing window with the id "\_jparadrag\_placeholder" 
 and then fade in the panaorama when all the images have been loaded.
