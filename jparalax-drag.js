@@ -7,10 +7,17 @@
 		startPosition 	: null,
 		factor 			: 2,
 		loop			: true,
+		momentum		: {
+			avg 	  : 3,
+			friction  : 0.4
+		},
 		onDrag 			: function(){  },
 		onDragStop 		: function(){  },
 		onLoad			: function(){  }
     }, o);
+
+	// TODO: momentum only compatible with looping
+	if(!opts.loop && opts.momentum) opts.momentum = false;
 	
 	// returns the x of the middle image
 	function _middle_x(left_x, width){
@@ -25,25 +32,74 @@
 	}
 	
 	return this.each(function(){
-		var $self         = $(this),
-			self          = this,
-			li_count      = $('li', this).length,
-			img_count     = $(this).find('img').length,
-			images_loaded = 0;
+		var $self             = $(this),
+			self              = this,
+			li_count          = $('li', this).length,
+			img_count         = $(this).find('img').length,
+			images_loaded     = 0,
+			drags             = [],
+			velocity          = 0,
+			momentum_interval = null;
+			
 			
 		var methods = {
 			drag : function(ev, ui){
-				var left_x = typeof ev === 'object' ? ui.position.left : ev;
+				var left_x,
+					sum_time = 0,
+					sum_distance = 0;
+					
+				
+				if(typeof ev === 'object'){
+					left_x =  ui.position.left;
+					
+					if(opts.momentum){ // calculate velocity
+						drags.push({ timestamp : ev.timeStamp, position : left_x });
+						drags = drags.slice(-opts.momentum.avg);
+						if(drags.length >= opts.momentum.avg){
+							for(var i in drags){
+								if(i > 0){
+									var current_drag = drags[i];
+									var last_drag    = drags[i-1];
+
+									sum_distance += current_drag.position - last_drag.position;
+									sum_time += current_drag.timestamp - last_drag.timestamp;
+								}
+							}
+							velocity = sum_distance / sum_time;
+						}
+					}
+					
+				} else {
+					left_x = ev;
+					
+				}
 				methods.move_layers(left_x);
 			},
 			move_to : function(left_x){
 				$('li:last', $self).css({ left : left_x });
 				methods.drag(left_x);
 			},
-			stop_drag : function(ev, ui){
+			reset : function(){
 				$('li', $self).each(function(i){
 					$(this).css('left', _middle_x(parseInt($(this).css('left')), $(this).data('jParadrag.width')));
 				});
+			},
+			stop_drag : function(ev, ui){
+				methods.reset();
+				
+				if(opts.momentum){
+					var interval = 41; // 24 fps
+					momentum_interval = setInterval(function(){
+						var left_x = parseInt($('li:last', $self).css('left'));
+						
+						if(Math.abs(velocity) <= opts.momentum.friction + 0.01) clearInterval(momentum_interval);
+						
+						if(velocity >= 0) velocity -= opts.momentum.friction;
+						else velocity += opts.momentum.friction;
+						methods.move_to(left_x + velocity * interval);
+						methods.reset();
+					}, interval);
+				}
 			},
 			move_layers : function(front_x){
 				$('li', $self).each(function(i){
@@ -104,7 +160,6 @@
 									$self.data('jParadrag.draggin', false);
 									opts.onDragStop();
 								} 
-								
 								methods.stop_drag(ev, ui);
 							}
 						};

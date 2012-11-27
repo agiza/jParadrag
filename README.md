@@ -29,6 +29,10 @@ Initialize
 				height			: 400, 	// the height of your panorama window
 				startingZIndex 	: 1,	
 				loop			: true, // endlessly loop
+				momentum		: {		// mimic iOS scrolling momentum - set to false to disable
+					avg 	  : 3,		// how many drag points to average to determine velocity
+					friction  : 0.4		// pixels/millisecond
+				},
 				startPosition 	: null, // by default the panorama will start in the center of the front image, otherwise use pixels from the left
 				factor 			: 2,	// the parallax factor, each layer back will move at half the speed of the one in front
 				onDrag 			: function(){  }, // called when the drag starts
@@ -44,3 +48,4 @@ Initialize
 jParadrag will create a placeholder div that is the same size as the viewing window with the id "\_jparadrag\_placeholder" 
 and then fade in the panaorama when all the images have been loaded.
 You can style this div with a spinner image if you like, *see example*
+* TODO: momentum scrolling is only compatible with looping right now
